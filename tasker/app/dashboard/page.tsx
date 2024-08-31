@@ -54,7 +54,7 @@ export default function Dashboard() {
 
             if (res.ok) {
                 alert("Task created successfully!");
-                setTitle("");
+                setTitle("");    
                 setDesc("");
                 setSelectedDate(undefined);
             } else {
