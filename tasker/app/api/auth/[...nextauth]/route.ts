@@ -22,7 +22,7 @@ const handler = NextAuth({
             return token;
         },
     },
-    secret: process.env.NEXTAUTH_SECRET, // Optional but recommended for security
+    // secret: process.env.NEXTAUTH_SECRET, // Optional but recommended for security
 });
 
 export { handler as GET, handler as POST };

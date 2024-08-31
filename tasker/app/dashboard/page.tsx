@@ -15,21 +15,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
+    const session = useSession();
     const [title, setTitle] = useState<string>("");
     const [desc, setDesc] = useState<string>("");
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const userId = session.data?.user.id;
 
-    const createdDate = new Date().toLocaleString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        hour12: true,
-    });
+    // Get the current date and time in ISO format
+    const createdDate = new Date().toISOString();
 
     // Handle task creation
     const createTask = async () => {
@@ -37,10 +33,10 @@ export default function Dashboard() {
             alert("Please fill in all fields before creating a task.");
             return;
         }
-
         try {
             const res = await fetch("/api/create", {
                 method: "POST",
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -48,13 +44,14 @@ export default function Dashboard() {
                     title,
                     desc,
                     createdAt: createdDate,
-                    reminder: selectedDate,
+                    reminder: selectedDate.toISOString(),
+                    userId,
                 }),
             });
 
             if (res.ok) {
                 alert("Task created successfully!");
-                setTitle("");    
+                setTitle("");
                 setDesc("");
                 setSelectedDate(undefined);
             } else {
