@@ -38,12 +38,12 @@ const Appbar = () => {
         }
     };
 
-    // useEffect(() => {
-    //     if (session?.user) {
-    //         setTheUser();
-    //         router.push('/dashboard');
-    //     }
-    // }, [session?.user]);
+    useEffect(() => {
+        if (session?.user) {
+            setTheUser();
+            router.push('/dashboard');
+        }
+    }, [session?.user]);
 
     return (
         <header className="bg-background w-full py-4 shadow-sm">

@@ -1,118 +1,295 @@
-"use client";
-
+"use client"
 import React, { useState } from "react";
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
-    CardFooter,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { useSession } from "next-auth/react";
+import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import CreateCard from "../component/Createcard";
+import { CalendarIcon, ExpandIcon, FilterIcon, LayoutGridIcon, ListIcon, ListOrderedIcon, MenuIcon, SearchIcon, SettingsIcon, TimerIcon, UserIcon } from "lucide-react";
 
-export default function Dashboard() {
-    const session = useSession();
-    const [title, setTitle] = useState<string>("");
-    const [desc, setDesc] = useState<string>("");
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-    const userId = session.data?.user.id;
+export default function Component() {
+    const [showCreateCard, setShowCreateCard] = useState(false);
 
-    // Get the current date and time in ISO format
-    const createdDate = new Date().toISOString();
+    const handleCreateClick = () => {
+        setShowCreateCard(true);
+    };
 
-    // Handle task creation
-    const createTask = async () => {
-        if (!title || !desc || !selectedDate) {
-            alert("Please fill in all fields before creating a task.");
-            return;
-        }
-        try {
-            const res = await fetch("/api/create", {
-                method: "POST",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title,
-                    desc,
-                    createdAt: createdDate,
-                    reminder: selectedDate.toISOString(),
-                    userId,
-                }),
-            });
-
-            if (res.ok) {
-                alert("Task created successfully!");
-                setTitle("");
-                setDesc("");
-                setSelectedDate(undefined);
-            } else {
-                console.log("Error creating task:", res.statusText);
-            }
-        } catch (error: any) {
-            console.log("Error in creating the task", error.message);
-        }
+    const handleCloseCreateCard = () => {
+        setShowCreateCard(false);
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto py-10 px-6 md:px-8">
-            <div className="flex flex-col items-center gap-8">
-                <div className="space-y-2 text-center">
-                    <h1 className="text-3xl font-bold">Task Manager</h1>
-                    <p className="text-muted-foreground">Create and manage your tasks.</p>
+        <div className={`flex min-h-screen w-full ${showCreateCard ? "backdrop-blur-sm" : ""}`}>
+            {showCreateCard && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+                    <CreateCard onClose={handleCloseCreateCard} />
                 </div>
-                <Card className="w-full">
-                    <CardHeader>
-                        <CardTitle>New Task</CardTitle>
-                        <CardDescription>Fill out the form to create a new task.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Title</Label>
-                            <Input
-                                id="title"
-                                placeholder="Enter task title"
-                                value={title}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea
-                                id="description"
-                                placeholder="Enter task description"
-                                className="min-h-[100px]"
-                                value={desc}
-                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDesc(e.target.value)}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="reminder">Reminder</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start font-normal">
-                                        {selectedDate ? selectedDate.toLocaleDateString() : "Pick a date and time"}
-                                        <div className="ml-auto h-4 w-4 opacity-50" />
+            )}
+            <aside className="bg-background border-r border-muted-foreground/10 hidden md:flex flex-col w-64 p-6 gap-4">
+                <Link href="#" className="flex items-center gap-2 font-bold text-lg" prefetch={false}>
+                    <TimerIcon className="w-6 h-6" />
+                    Task Manager
+                </Link>
+                <nav className="flex flex-col gap-2">
+                    {/* Sidebar links */}
+                    <Link href="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground" prefetch={false}>
+                        <ListIcon className="w-5 h-5" />
+                        Tasks
+                    </Link>
+                    <Link href="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground" prefetch={false}>
+                        <LayoutGridIcon className="w-5 h-5" />
+                        Projects
+                    </Link>
+                    <Link href="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground" prefetch={false}>
+                        <CalendarIcon className="w-5 h-5" />
+                        Calendar
+                    </Link>
+                    <Link href="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground" prefetch={false}>
+                        <SettingsIcon className="w-5 h-5" />
+                        Settings
+                    </Link>
+                </nav>
+            </aside>
+            <div className="flex-1 flex flex-col">
+                <header className="bg-background border-b border-muted-foreground/10 p-4 md:p-6 flex items-center gap-4">
+                    <Button variant="ghost" size="icon" className="md:hidden">
+                        <MenuIcon className="w-6 h-6" />
+                        <span className="sr-only">Toggle Menu</span>
+                    </Button>
+                    <div className="relative flex-1">
+                        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Search tasks..."
+                            className="pl-10 pr-8 rounded-md bg-muted/20 focus:bg-background focus:border-primary focus:ring-primary"
+                        />
+                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <UserIcon className="w-6 h-6" />
+                                <span className="sr-only">User Menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>John Doe</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Profile</DropdownMenuItem>
+                            <DropdownMenuItem>Settings</DropdownMenuItem>
+                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button onClick={handleCreateClick}>Create</Button>
+                </header>
+                <main className="flex-1 p-4 md:p-6 overflow-auto">
+                    <div className="flex items-center justify-between mb-4">
+                        <h1 className="text-2xl font-bold">Tasks</h1>
+                        <div className="flex items-center gap-2">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                        <FilterIcon className="w-4 h-4 mr-2" />
+                                        Filter
                                     </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar mode="single" selected={selectedDate} onSelect={setSelectedDate} />
-                                </PopoverContent>
-                            </Popover>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuCheckboxItem checked>Due Date</DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem>Status</DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem>Assignee</DropdownMenuCheckboxItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                        <ListOrderedIcon className="w-4 h-4 mr-2" />
+                                        Sort
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuRadioGroup value="dueDate">
+                                        <DropdownMenuRadioItem value="dueDate">Due Date</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="status">Status</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="assignee">Assignee</DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-end">
-                        <Button onClick={createTask}>Create Task</Button>
-                    </CardFooter>
-                </Card>
+                    </div>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Task</TableHead>
+                                <TableHead>Due Date</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Assignee</TableHead>
+                                <TableHead>
+                                    <span className="sr-only">Actions</span>
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>
+                                    <div className="font-medium">Finish the marketing report</div>
+                                    <div className="text-muted-foreground text-sm">
+                                        Prepare the quarterly marketing report for the executive team.
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-muted-foreground">2023-05-15</div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="secondary">In Progress</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src="/placeholder-user.jpg" alt="John Doe" />
+                                            <AvatarFallback>JD</AvatarFallback>
+                                        </Avatar>
+                                        <div>John Doe</div>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <ExpandIcon className="w-5 h-5" />
+                                                <span className="sr-only">Task Actions</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <div className="font-medium">Redesign the company website</div>
+                                    <div className="text-muted-foreground text-sm">
+                                        Update the website with the new branding and design.
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-muted-foreground">2023-06-30</div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="secondary">In Progress</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src="/placeholder-user.jpg" alt="Jane Smith" />
+                                            <AvatarFallback>JS</AvatarFallback>
+                                        </Avatar>
+                                        <div>Jane Smith</div>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <ExpandIcon className="w-5 h-5" />
+                                                <span className="sr-only">Task Actions</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <div className="font-medium">Prepare the quarterly financial report</div>
+                                    <div className="text-muted-foreground text-sm">
+                                        Gather and analyze the financial data for the quarterly report.
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-muted-foreground">2023-07-01</div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline">Pending</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src="/placeholder-user.jpg" alt="Michael Johnson" />
+                                            <AvatarFallback>MJ</AvatarFallback>
+                                        </Avatar>
+                                        <div>Michael Johnson</div>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <ExpandIcon className="w-5 h-5" />
+                                                <span className="sr-only">Task Actions</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <div className="font-medium">Implement the new CRM system</div>
+                                    <div className="text-muted-foreground text-sm">
+                                        Set up and configure the new CRM system for the sales team.
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-muted-foreground">2023-08-15</div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="secondary">In Progress</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src="/placeholder-user.jpg" alt="Sarah Lee" />
+                                            <AvatarFallback>SL</AvatarFallback>
+                                        </Avatar>
+                                        <div>Sarah Lee</div>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <ExpandIcon className="w-5 h-5" />
+                                                <span className="sr-only">Task Actions</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </main>
             </div>
         </div>
     );
