@@ -43,8 +43,7 @@ export default function Component() {
             console.log("Error in fetching")
         }
     }
-    // TODO : Map This
-    // console.log(tasks);
+
     useEffect(() => {
         getAllTheTask();
     }, [userId])
