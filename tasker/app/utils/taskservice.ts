@@ -1,3 +1,5 @@
+
+
 export const getAllTheTask = async (userId: string, setTasks: any) => {
     try {
         const res = await fetch(`/api/create?userId=${userId}`, {
@@ -18,3 +20,7 @@ export const getAllTheTask = async (userId: string, setTasks: any) => {
         console.log("Error in fetching", error);
     }
 };
+
+
+
+

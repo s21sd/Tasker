@@ -62,7 +62,7 @@ export default function Component() {
                     Task Manager
                 </Link>
                 <nav className="flex flex-col gap-2">
-                  
+
                     <Link href="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground" prefetch={false}>
                         <ListIcon className="w-5 h-5" />
                         Tasks
