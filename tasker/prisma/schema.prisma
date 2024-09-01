@@ -23,11 +23,12 @@ model User {
 
 // Defining the schema for the task
 model Tasks {
-  id        String   @id @default(uuid())
-  title     String
-  desc      String
-  createdAt DateTime @default(now())
-  reminder  DateTime
-  userId    String? // Foreign key to the User model
-  User      User?    @relation(fields: [userId], references: [id])
+  id          String   @id @default(uuid())
+  title       String
+  desc        String
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  reminder    DateTime
+  userId      String? // Foreign key to the User model
+  User        User?    @relation(fields: [userId], references: [id])
 }

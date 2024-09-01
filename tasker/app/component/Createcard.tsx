@@ -9,6 +9,8 @@ import {
     CardContent,
     CardFooter,
 } from "@/components/ui/card";
+import { toast } from "sonner"
+
 import { X } from 'lucide-react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -18,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useSession } from "next-auth/react";
 
-export default function CreateCard({onClose}: any) {
+export default function CreateCard({ onClose }: any) {
     const session = useSession();
     const [title, setTitle] = useState<string>("");
     const [desc, setDesc] = useState<string>("");
@@ -31,7 +33,7 @@ export default function CreateCard({onClose}: any) {
     const createTask = async () => {
         if (!title || !desc || !selectedDate) {
             alert("Please fill in all fields before creating a task.");
-            return;
+             return;
         }
         try {
             const res = await fetch("/api/create", {
@@ -45,15 +47,17 @@ export default function CreateCard({onClose}: any) {
                     desc,
                     createdAt: createdDate,
                     reminder: selectedDate.toISOString(),
+                    c: false,
                     userId,
                 }),
             });
 
             if (res.ok) {
-                alert("Task created successfully!");
+                toast("Task created successfully!");
                 setTitle("");
                 setDesc("");
                 setSelectedDate(undefined);
+                onClose();
             } else {
                 console.log("Error creating task:", res.statusText);
             }

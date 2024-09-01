@@ -58,7 +58,7 @@ export default function Landing() {
                                 </div>
                             </div>
                             <img
-                                src="/placeholder.svg"
+                                src=""
                                 width="550"
                                 height="550"
                                 alt="Hero"
@@ -81,7 +81,7 @@ export default function Landing() {
                         </div>
                         <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
                             <img
-                                src="/placeholder.svg"
+                                src=""
                                 width="550"
                                 height="310"
                                 alt="Image"
@@ -132,7 +132,7 @@ export default function Landing() {
                                     </blockquote>
                                     <div className="flex items-center gap-4">
                                         <Avatar>
-                                            <AvatarImage src="/placeholder-user.jpg" />
+                                            <AvatarImage src="" />
                                             <AvatarFallback>JD</AvatarFallback>
                                         </Avatar>
                                         <div>
@@ -147,7 +147,7 @@ export default function Landing() {
                                     </blockquote>
                                     <div className="flex items-center gap-4">
                                         <Avatar>
-                                            <AvatarImage src="/placeholder-user.jpg" />
+                                            <AvatarImage src="" />
                                             <AvatarFallback>JD</AvatarFallback>
                                         </Avatar>
                                         <div>

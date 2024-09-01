@@ -1,16 +1,19 @@
 "use client"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import CreateCard from "../component/Createcard";
 import { CalendarIcon, ExpandIcon, FilterIcon, LayoutGridIcon, ListIcon, ListOrderedIcon, MenuIcon, SearchIcon, SettingsIcon, TimerIcon, UserIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import TableList from "../component/TableList";
 
 export default function Component() {
+    const session = useSession();
+    const userId = session.data?.user.id;
+    const [tasks, setTasks] = useState([]);
     const [showCreateCard, setShowCreateCard] = useState(false);
 
     const handleCreateClick = () => {
@@ -20,6 +23,31 @@ export default function Component() {
     const handleCloseCreateCard = () => {
         setShowCreateCard(false);
     };
+    const getAllTheTask = async () => {
+        try {
+            const res = await fetch(`/api/create?userId=${userId}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            if (!res.ok) {
+                throw new Error("Failed to fetch tasks");
+            }
+
+            const data = await res.json();
+            setTasks(data.tasks[0].task);
+            // console.log(data.tasks[0].task);
+        } catch (error) {
+            console.log("Error in fetching")
+        }
+    }
+    // TODO : Map This
+    // console.log(tasks);
+    useEffect(() => {
+        getAllTheTask();
+    }, [userId, tasks])
 
     return (
         <div className={`flex min-h-screen w-full ${showCreateCard ? "backdrop-blur-sm" : ""}`}>
@@ -34,7 +62,7 @@ export default function Component() {
                     Task Manager
                 </Link>
                 <nav className="flex flex-col gap-2">
-                    {/* Sidebar links */}
+                  
                     <Link href="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground" prefetch={false}>
                         <ListIcon className="w-5 h-5" />
                         Tasks
@@ -75,7 +103,7 @@ export default function Component() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>John Doe</DropdownMenuLabel>
+                            <DropdownMenuLabel>Sunny</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>Profile</DropdownMenuItem>
                             <DropdownMenuItem>Settings</DropdownMenuItem>
@@ -100,7 +128,7 @@ export default function Component() {
                                     <DropdownMenuSeparator />
                                     <DropdownMenuCheckboxItem checked>Due Date</DropdownMenuCheckboxItem>
                                     <DropdownMenuCheckboxItem>Status</DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem>Assignee</DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem>Reminder</DropdownMenuCheckboxItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <DropdownMenu>
@@ -126,168 +154,20 @@ export default function Component() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Task</TableHead>
-                                <TableHead>Due Date</TableHead>
+                                <TableHead>Created</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead>Assignee</TableHead>
+                                <TableHead>Reminder</TableHead>
                                 <TableHead>
                                     <span className="sr-only">Actions</span>
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>
-                                    <div className="font-medium">Finish the marketing report</div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Prepare the quarterly marketing report for the executive team.
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="text-muted-foreground">2023-05-15</div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="secondary">In Progress</Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src="/placeholder-user.jpg" alt="John Doe" />
-                                            <AvatarFallback>JD</AvatarFallback>
-                                        </Avatar>
-                                        <div>John Doe</div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <ExpandIcon className="w-5 h-5" />
-                                                <span className="sr-only">Task Actions</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div className="font-medium">Redesign the company website</div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Update the website with the new branding and design.
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="text-muted-foreground">2023-06-30</div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="secondary">In Progress</Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src="/placeholder-user.jpg" alt="Jane Smith" />
-                                            <AvatarFallback>JS</AvatarFallback>
-                                        </Avatar>
-                                        <div>Jane Smith</div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <ExpandIcon className="w-5 h-5" />
-                                                <span className="sr-only">Task Actions</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div className="font-medium">Prepare the quarterly financial report</div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Gather and analyze the financial data for the quarterly report.
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="text-muted-foreground">2023-07-01</div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="outline">Pending</Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src="/placeholder-user.jpg" alt="Michael Johnson" />
-                                            <AvatarFallback>MJ</AvatarFallback>
-                                        </Avatar>
-                                        <div>Michael Johnson</div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <ExpandIcon className="w-5 h-5" />
-                                                <span className="sr-only">Task Actions</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div className="font-medium">Implement the new CRM system</div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Set up and configure the new CRM system for the sales team.
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="text-muted-foreground">2023-08-15</div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="secondary">In Progress</Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src="/placeholder-user.jpg" alt="Sarah Lee" />
-                                            <AvatarFallback>SL</AvatarFallback>
-                                        </Avatar>
-                                        <div>Sarah Lee</div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <ExpandIcon className="w-5 h-5" />
-                                                <span className="sr-only">Task Actions</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
+                        {
+                            tasks && tasks.map((items: any, index: number) => {
+                                return <TableList key={index} items={items} />
+                            })
+                        }
+
                     </Table>
                 </main>
             </div>
