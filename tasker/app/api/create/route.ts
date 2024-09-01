@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
     const userId = req.nextUrl.searchParams.get('userId');
+    console.log("Called ALLL")
     if (!userId) {
         return NextResponse.json({
             message: "User ID is required"
@@ -78,20 +79,22 @@ export async function GET(req: NextRequest) {
 
 // Updating 
 export async function PUT(req: NextRequest) {
-    const { userId, taskId } = await req.json();
+    const userId = req.nextUrl.searchParams.get('userId');
+    const taskId = req.nextUrl.searchParams.get('taskId');
+    console.log("Called ALLL 3")
     try {
         const task = await prisma.user.update({
             where: {
-                id: userId
+                id: userId ?? ""
             },
             data: {
                 task: {
                     update: {
                         where: {
-                            id: taskId
+                            id: taskId ?? ""
                         },
                         data: {
-                            title: 'My updated title',
+                            isCompleted: true,
                         },
                     }
                 }
@@ -119,17 +122,17 @@ export async function PUT(req: NextRequest) {
 
 // Deleting 
 export async function DELETE(req: NextRequest) {
-    // const { userId, taskId } = await req.json();
-    // console.log(userId, "    ", taskId);
+    const userId = req.nextUrl.searchParams.get('userId');
+    const taskId = req.nextUrl.searchParams.get('taskId');
     try {
         const tasks = await prisma.user.update({
             where: {
-                id: '103473812922276765854'
+                id: userId ?? ""
             },
             data: {
                 task: {
                     delete: {
-                        id: '077bc6ff-2cdc-472d-a779-b0d836c95a29'
+                        id: taskId ?? ""
                     }
                 }
             },
@@ -138,7 +141,7 @@ export async function DELETE(req: NextRequest) {
             }
         })
         return NextResponse.json({
-            message: "This is my updated task", tasks
+            message: "Task Deleted", tasks
         }, {
             status: 200
         })

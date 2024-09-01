@@ -47,7 +47,7 @@ export default function Component() {
     // console.log(tasks);
     useEffect(() => {
         getAllTheTask();
-    }, [userId, tasks])
+    }, [userId])
 
     return (
         <div className={`flex min-h-screen w-full ${showCreateCard ? "backdrop-blur-sm" : ""}`}>

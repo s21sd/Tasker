@@ -33,7 +33,7 @@ export default function CreateCard({ onClose }: any) {
     const createTask = async () => {
         if (!title || !desc || !selectedDate) {
             alert("Please fill in all fields before creating a task.");
-             return;
+            return;
         }
         try {
             const res = await fetch("/api/create", {
@@ -47,7 +47,7 @@ export default function CreateCard({ onClose }: any) {
                     desc,
                     createdAt: createdDate,
                     reminder: selectedDate.toISOString(),
-                    c: false,
+                    isCompleted: false,
                     userId,
                 }),
             });
