@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import CreateCard from "../component/Createcard";
-import { CalendarIcon, ExpandIcon, FilterIcon, LayoutGridIcon, ListIcon, ListOrderedIcon, MenuIcon, SearchIcon, SettingsIcon, TimerIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, FilterIcon, LayoutGridIcon, ListIcon, ListOrderedIcon, MenuIcon, SearchIcon, SettingsIcon, TimerIcon, UserIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import TableList from "../component/TableList";
-
+import { useRecoilValue } from "recoil";
+import { updateTheVal } from "../recoil/atoms";
 export default function Component() {
     const session = useSession();
     const userId = session.data?.user.id;
     const [tasks, setTasks] = useState([]);
     const [showCreateCard, setShowCreateCard] = useState(false);
-
+    const myval = useRecoilValue(updateTheVal);
     const handleCreateClick = () => {
         setShowCreateCard(true);
     };
@@ -23,6 +24,22 @@ export default function Component() {
     const handleCloseCreateCard = () => {
         setShowCreateCard(false);
     };
+    const sendEmail = async () => {
+        try {
+            const res = await fetch('/api/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await res.json();
+            console.log('Email sent:', data);
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+    };
+
     const getAllTheTask = async () => {
         try {
             const res = await fetch(`/api/create?userId=${userId}`, {
@@ -47,6 +64,9 @@ export default function Component() {
     useEffect(() => {
         getAllTheTask();
     }, [userId])
+    useEffect(() => {
+        getAllTheTask();
+    }, [myval])
 
     return (
         <div className={`flex min-h-screen w-full ${showCreateCard ? "backdrop-blur-sm" : ""}`}>
@@ -149,6 +169,8 @@ export default function Component() {
                             </DropdownMenu>
                         </div>
                     </div>
+
+
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -168,6 +190,7 @@ export default function Component() {
                         }
 
                     </Table>
+
                 </main>
             </div>
         </div>

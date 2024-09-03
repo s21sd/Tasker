@@ -19,6 +19,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useSession } from "next-auth/react";
+import { useRecoilState } from "recoil";
+import { updateTheVal } from "../recoil/atoms";
 
 export default function CreateCard({ onClose }: any) {
     const session = useSession();
@@ -26,10 +28,13 @@ export default function CreateCard({ onClose }: any) {
     const [desc, setDesc] = useState<string>("");
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
     const userId = session.data?.user.id;
-    // Get the current date and time in ISO format
     const createdDate = new Date().toISOString();
 
-    // Handle task creation
+    const [val, setVal] = useRecoilState(updateTheVal);
+
+    const incrementValue = () => {
+        setVal((prevVal: any) => prevVal + 1);
+    };
     const createTask = async () => {
         if (!title || !desc || !selectedDate) {
             alert("Please fill in all fields before creating a task.");
@@ -58,6 +63,7 @@ export default function CreateCard({ onClose }: any) {
                 setDesc("");
                 setSelectedDate(undefined);
                 onClose();
+                incrementValue();
             } else {
                 console.log("Error creating task:", res.statusText);
             }

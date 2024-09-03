@@ -8,6 +8,8 @@ import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import Updatecard from './Updatecard';
+import { useRecoilState } from 'recoil';
+import { updateTheVal } from '../recoil/atoms';
 
 interface Item {
     id: string;
@@ -26,7 +28,11 @@ const TableList: React.FC<TableListProps> = ({ items }) => {
     const session = useSession();
     const userId = session.data?.user.id;
     const [showCreateCard, setShowCreateCard] = useState(false);
+    const [val, setVal] = useRecoilState(updateTheVal);
 
+    const incrementValue = () => {
+        setVal((prevVal: any) => prevVal + 1);
+    };
     const handleCreateClick = () => {
         setShowCreateCard(true);
     };
@@ -51,7 +57,7 @@ const TableList: React.FC<TableListProps> = ({ items }) => {
 
             const data = await res.json();
             toast('Task Deleted Successfully');
-            console.log(data);
+            incrementValue();
         } catch (error) {
             console.log('Error in deleting the task:', error);
         }
@@ -73,7 +79,7 @@ const TableList: React.FC<TableListProps> = ({ items }) => {
 
             const data = await res.json();
             toast('Task Completed Successfully');
-            console.log(data);
+            incrementValue()
         } catch (error) {
             console.log('Error in updating the task:', error);
         }
@@ -99,7 +105,7 @@ const TableList: React.FC<TableListProps> = ({ items }) => {
                             </div>
                         </TableCell>
                         <TableCell>
-                            <Badge variant="secondary">
+                            <Badge className={`${items.isCompleted ? 'bg-green-400' : ''}`} variant="secondary">
                                 {items.isCompleted ? 'Completed' : 'Not Completed'}
                             </Badge>
                         </TableCell>
@@ -128,7 +134,7 @@ const TableList: React.FC<TableListProps> = ({ items }) => {
                             </DropdownMenu>
                         </TableCell>
                     </TableRow>
-                </TableBody>
+                </TableBody >
             )}
         </>
     );
