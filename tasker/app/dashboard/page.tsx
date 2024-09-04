@@ -16,6 +16,9 @@ export default function Component() {
     const userId = session.data?.user.id;
     const [tasks, setTasks] = useState([]);
     const [showCreateCard, setShowCreateCard] = useState(false);
+    const [searchTask, setsearchMyTasks] = useState([]);
+    const [searchtitle, setSearchTitle] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
     const myval = useRecoilValue(updateTheVal);
     const handleCreateClick = () => {
         setShowCreateCard(true);
@@ -34,7 +37,7 @@ export default function Component() {
             });
 
             const data = await res.json();
-            console.log('Email sent:', data);
+
         } catch (error) {
             console.error('Error sending email:', error);
         }
@@ -61,12 +64,38 @@ export default function Component() {
         }
     }
 
+    const getSearchTask = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/search?userId=${userId}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: searchtitle
+                })
+            })
+            if (!res.ok) {
+                throw new Error("Failed to fetch tasks");
+            }
+            const data = await res.json();
+            setsearchMyTasks(data.tasks);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false)
+            console.log("Error in fetching", error)
+        }
+    }
+
     useEffect(() => {
         getAllTheTask();
     }, [userId])
     useEffect(() => {
         getAllTheTask();
     }, [myval])
+
 
     return (
         <div className={`flex min-h-screen w-full ${showCreateCard ? "backdrop-blur-sm" : ""}`}>
@@ -106,14 +135,20 @@ export default function Component() {
                         <MenuIcon className="w-6 h-6" />
                         <span className="sr-only">Toggle Menu</span>
                     </Button>
-                    <div className="relative flex-1">
-                        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Search tasks..."
-                            className="pl-10 pr-8 rounded-md bg-muted/20 focus:bg-background focus:border-primary focus:ring-primary"
-                        />
+                    <div className="flex justify-between items-center w-[90%]">
+                        <div className="flex justify-center items-center w-[90%]">
+
+                            <Input
+                                value={searchtitle}
+                                onChange={(e) => setSearchTitle(e.target.value)}
+                                type="search"
+                                placeholder="Search tasks..."
+                                className="rounded-md bg-muted/20 focus:bg-background focus:border-primary focus:ring-primary"
+                            />
+                        </div>
+                        <Button onClick={getSearchTask} variant="default">Search</Button>
                     </div>
+                    <Button onClick={handleCreateClick}>Create</Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
@@ -129,7 +164,6 @@ export default function Component() {
                             <DropdownMenuItem>Logout</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button onClick={handleCreateClick}>Create</Button>
                 </header>
                 <main className="flex-1 p-4 md:p-6 overflow-auto">
                     <div className="flex items-center justify-between mb-4">
@@ -183,10 +217,17 @@ export default function Component() {
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
+
                         {
-                            tasks && tasks.map((items: any, index: number) => {
-                                return <TableList key={index} items={items} />
-                            })
+                            searchTask.length > 0 && searchtitle ?
+
+                                searchTask && searchTask.map((items: any, index: number) => {
+                                    return <TableList key={index} items={items} />
+                                }) :
+                                tasks && tasks.map((items: any, index: number) => {
+                                    return <TableList key={index} items={items} />
+                                })
+
                         }
 
                     </Table>

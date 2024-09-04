@@ -1,6 +1,5 @@
 "use client";
 import { Button } from '@/components/ui/button';
-import { ThermometerSnowflakeIcon } from 'lucide-react';
 import { signIn, useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
