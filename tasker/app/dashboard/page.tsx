@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import CreateCard from "../component/Createcard";
-import { CalendarIcon, FilterIcon, LayoutGridIcon, ListIcon, ListOrderedIcon, MenuIcon, SearchIcon, SettingsIcon, TimerIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, FilterIcon, LayoutGridIcon, ListIcon, ListOrderedIcon, Loader, MenuIcon, SearchIcon, SettingsIcon, TimerIcon, UserIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import TableList from "../component/TableList";
 import { useRecoilValue } from "recoil";
 import { updateTheVal } from "../recoil/atoms";
+
 export default function Component() {
     const session = useSession();
     const userId = session.data?.user.id;
@@ -44,6 +45,7 @@ export default function Component() {
     };
 
     const getAllTheTask = async () => {
+        setLoading(true);
         try {
             const res = await fetch(`/api/create?userId=${userId}`, {
                 method: 'GET',
@@ -58,9 +60,10 @@ export default function Component() {
 
             const data = await res.json();
             setTasks(data.tasks[0].task);
-            // console.log(data.tasks[0].task);
+            setLoading(false);
         } catch (error) {
             console.log("Error in fetching")
+            setLoading(false);
         }
     }
 
@@ -203,8 +206,6 @@ export default function Component() {
                             </DropdownMenu>
                         </div>
                     </div>
-
-
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -217,8 +218,8 @@ export default function Component() {
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
+                        {loading ? < Loader className="mt-2 animate-spin flex" /> :
 
-                        {
                             searchTask.length > 0 && searchtitle ?
 
                                 searchTask && searchTask.map((items: any, index: number) => {
