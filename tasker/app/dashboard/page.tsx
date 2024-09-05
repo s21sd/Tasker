@@ -7,12 +7,14 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLab
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import CreateCard from "../component/Createcard";
 import { CalendarIcon, FilterIcon, LayoutGridIcon, ListIcon, ListOrderedIcon, Loader, MenuIcon, SearchIcon, SettingsIcon, TimerIcon, UserIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import TableList from "../component/TableList";
 import { useRecoilValue } from "recoil";
 import { updateTheVal } from "../recoil/atoms";
+import { useRouter } from "next/navigation";
 
 export default function Component() {
+    const router = useRouter();
     const session = useSession();
     const userId = session.data?.user.id;
     const [tasks, setTasks] = useState([]);
@@ -98,6 +100,10 @@ export default function Component() {
     useEffect(() => {
         getAllTheTask();
     }, [myval])
+    const handleLogout = () => {
+        signOut();
+
+    }
 
 
     return (
@@ -164,7 +170,7 @@ export default function Component() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>Profile</DropdownMenuItem>
                             <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </header>
@@ -206,32 +212,35 @@ export default function Component() {
                             </DropdownMenu>
                         </div>
                     </div>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Task</TableHead>
-                                <TableHead>Created</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Reminder</TableHead>
-                                <TableHead>
-                                    <span className="sr-only">Actions</span>
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        {loading ? < Loader className="mt-2 animate-spin flex" /> :
+                    {
+                        loading ? < Loader size={48} className="mt-10 animate-spin flex mx-auto " /> : <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Task</TableHead>
+                                    <TableHead>Created</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Reminder</TableHead>
+                                    <TableHead>
+                                        <span className="sr-only">Actions</span>
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            {
 
-                            searchTask.length > 0 && searchtitle ?
+                                searchTask.length > 0 && searchtitle ?
 
-                                searchTask && searchTask.map((items: any, index: number) => {
-                                    return <TableList key={index} items={items} />
-                                }) :
-                                tasks && tasks.map((items: any, index: number) => {
-                                    return <TableList key={index} items={items} />
-                                })
+                                    searchTask && searchTask.map((items: any, index: number) => {
+                                        return <TableList key={index} items={items} />
+                                    }) :
+                                    tasks && tasks.map((items: any, index: number) => {
+                                        return <TableList key={index} items={items} />
+                                    })
 
-                        }
+                            }
 
-                    </Table>
+                        </Table>
+                    }
+
 
                 </main>
             </div>

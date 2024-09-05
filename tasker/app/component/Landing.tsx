@@ -1,8 +1,8 @@
 
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import frontImg from '../../public/frontimg.jpg'
+import Image from "next/image"
 
 export default function Landing() {
     return (
@@ -57,8 +57,8 @@ export default function Landing() {
                                     </Link>
                                 </div>
                             </div>
-                            <img
-                                src=""
+                            <Image
+                                src={frontImg}
                                 width="550"
                                 height="550"
                                 alt="Hero"
@@ -160,7 +160,7 @@ export default function Landing() {
                         </div>
                     </div>
                 </section>
-                
+
             </main>
             <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
                 <p className="text-xs text-muted-foreground">&copy; 2024 Task Manager. All rights reserved.</p>
